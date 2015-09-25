@@ -46,13 +46,15 @@
 
 <!-- ======================================== グローバルフォワード定義 -->
   <global-forwards>
+    <forward name="welcome" module="/" path="/welcome.do"/>
     <forward name="txtoken-error" module="/" path="/error.do"/>
   </global-forwards>
 
 <!-- ======================================== アクションマッピング定義 -->
   <action-mappings type="jp.terasoluna.fw.web.struts.action.ActionMappingEx">
+
     <action path="/welcome" parameter="/welcome.jsp"/>
-    
+
     <!-- エラー画面(error.jsp)への遷移 -->
     <action path="/error"
             name="_DummyForm"
