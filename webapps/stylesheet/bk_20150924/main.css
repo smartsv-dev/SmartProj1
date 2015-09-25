@@ -1,0 +1,379 @@
+/* ボディ部の指定 */
+.com-body-panel {
+  padding: 10px;
+  background-color: #FFFFEE;
+}
+
+
+/* ボディのタイトル部のスタイルを指定する。 */
+.com-body-title-panel {
+  width: 960px;
+  height: 30px;
+  background-color: #CCEEFF;
+  border: 2px ridge;
+  text-align: left;
+  margin-bottom: 2px;
+  padding: 4px;
+}
+
+
+/* ボディのタイトルのテキスト部のスタイルを指定する。 */
+.com-body-title-text-panel {
+  text-align: left;
+  float: left;
+  margin: 6px;
+}
+
+
+/* 画面名のテキストのスタイルを指定する。 */
+.com-body-screen-name-text {
+  font-weight: bold;
+}
+
+
+/* デフォルトボディ部の長さを指定する。 */
+#default-body-panel {
+  min-height: 500px;
+}
+
+
+/* ログイン画面のボディ部の長さを指定する。 */
+#login-body-panel {
+  height: 500px;
+}
+
+
+/* メニュー画面のボディ部の長さを指定する。 */
+#menu-body-panel {
+  height: 500px;
+}
+
+
+/* エラー画面のボディ部の長さを指定する。 */
+#error-body-panel {
+  height: 500px;
+}
+
+
+/* デフォルトメッセージパネルの長さを指定する。 */
+#default-message-panel {
+  width: 700px;
+}
+
+
+/* デフォルトエラーメッセージパネルの長さを指定する。 */
+#default-error-message-panel {
+  width: 700px;
+}
+
+
+/* ツアー検索条件テーブルの長さを指定する。 */
+#search-condition-table {
+  width: 950px;
+}
+
+
+/* ツアー検索結果テーブルの長さを指定する。 */
+#search-result-table {
+  width: 950px;
+}
+
+
+/* 代表者テーブルの長さを指定する。 */
+#customer-table {
+  width: 950px;
+}
+
+
+/* ツアー詳細情報テーブルの長さを指定する。 */
+#tour-table {
+  width: 950px;
+}
+
+
+/* 料金明細テーブルの長さを指定する。 */
+#charge-table {
+  width: 950px;
+}
+
+
+/* 特記事項テーブルの長さを指定する。 */
+#special-affairs-table {
+  width: 950px;
+}
+
+
+/* 支払情報テーブルの長さを指定する。 */
+#payment-table {
+  width: 950px;
+}
+
+
+/* 顧客情報テーブルの長さを指定する。 */
+#register-table {
+  width: 950px;
+}
+
+
+/* 予約一覧テーブルの長さを指定する。 */
+#reserve-table {
+  width: 950px;
+}
+
+
+/* 予約番号の<td>スタイルを指定する。 */
+#tour-reserve-code-td {
+  text-align: left;
+}
+
+
+/* 申し込み日の<td>スタイルを指定する。 */
+#tour-offer-day-td {
+  text-align: left;
+}
+
+
+/* ツアー名の<td>スタイルを指定する。 */
+#tour-name-td {
+  text-align: left;
+}
+
+
+/* 出発日の<td>スタイルを指定する。 */
+#tour-starting-date-td {
+  text-align: left;
+}
+
+
+/* 日数の<td>スタイルを指定する。 */
+#tour-days-td {
+  text-align: left;
+}
+
+
+/* 出発地の<td>スタイルを指定する。 */
+#tour-starting-point-td {
+  text-align: left;
+}
+
+
+/* 目的地の<td>スタイルを指定する。 */
+#tour-destination-td {
+  text-align: left;
+}
+
+
+/* 添乗員の<td>スタイルを指定する。 */
+#tour-conductor-td {
+  text-align: left;
+}
+
+
+/* 宿泊施設の<td>スタイルを指定する。 */
+#tour-accommodations-td {
+  text-align: left;
+}
+
+
+/* 宿泊施設の連絡先の<td>スタイルを指定する。 */
+#tour-accommodations-tel-td {
+  text-align: left;
+}
+
+
+/* 概要の<td>スタイルを指定する。 */
+#tour-summary-td {
+  text-align: left;
+  width: 80%;
+  word-break:break-all;
+}
+
+
+/* 顧客IDの<td>スタイルを指定する。 */
+#customer-id-td {
+  text-align: left;
+  width: 80%;
+}
+
+
+/* フリガナの<td>スタイルを指定する。 */
+#customer-hurigana-td {
+  text-align: left;
+}
+
+
+/* 氏名の<td>スタイルを指定する。 */
+#customer-name-td {
+  text-align: left;
+}
+
+
+/* 生年月日の<td>スタイルを指定する。 */
+#customer-birth-td {
+  text-align: left;
+}
+
+
+/* 職業の<td>スタイルを指定する。 */
+#customer-job-td {
+  text-align: left;
+}
+
+
+/* Eメールの<td>スタイルを指定する。 */
+#customer-email-td {
+  text-align: left;
+  word-break: break-all;
+}
+
+
+/* 電話番号の<td>スタイルを指定する。 */
+#customer-tel-td {
+  text-align: left;
+}
+
+
+/* 郵便番号の<td>スタイルを指定する。 */
+#customer-postcode-td {
+  text-align: left;
+}
+
+
+/* 住所の<td>スタイルを指定する。 */
+#customer-address-td {
+  text-align: left;
+  word-break: break-all;
+}
+
+
+/* パスワードの<td>スタイルを指定する。 */
+#customer-password-td {
+  text-align: left;
+}
+
+
+/* 年令区分の<td>スタイルを指定する。 */
+#charge-age-td {
+  text-align: center;
+}
+
+
+/* 単価の<td>スタイルを指定する。 */
+#charge-price-td {
+  text-align: right;
+  font-weight: bold;
+}
+
+
+/* 人数の<td>スタイルを指定する。 */
+#charge-number-td {
+  text-align: center;
+}
+
+
+/* 料金の<td>スタイルを指定する。 */
+#charge-charge-td {
+  text-align: right;
+  font-weight: bold;
+}
+
+
+/* 合計料金の<td>スタイルを指定する。 */
+#charge-total-charge-td {
+  text-align: right;
+  font-weight: bold;
+}
+
+
+/* ご意見ご要望の<td>スタイルを指定する。 */
+#special-affairs-note-td {
+  text-align: left;
+  width: 80%;
+  word-break:break-all;
+}
+
+
+/* 支払方法の<td>スタイルを指定する。 */
+#payment-method-td {
+  text-align: left;
+}
+
+
+/* 振込口座の<td>スタイルを指定する。 */
+#payment-account-td {
+  text-align: left;
+}
+
+
+/* 支払期限の<td>スタイルを指定する。 */
+#payment-date-td {
+  text-align: left;
+  font-weight: bold;
+  color: #FF0000;
+}
+
+
+/* お問合せの<td>スタイルを指定する。 */
+#payment-inquiry-td {
+  text-align: left;
+}
+
+
+/* 検索ボタンの配置を指定する。 */
+#search-button-panel {
+  text-align: right;
+  margin-top: 15px;
+}
+
+
+/* メニュー画面のボタンの配置を指定する。 */
+#menu-button-panel {
+  clear: both;
+  float: right;
+  padding-top: 15px;
+}
+
+
+/* 次処理のためのボタンの配置を指定する。 */
+#confirm-button-panel {
+  margin-top: 15px;
+  margin-left: 10px;
+  float: right;
+}
+
+
+/* 戻るためのボタンの配置を指定する。 */
+#return-button-panel {
+  margin-top: 15px;
+  margin-left: 10px;
+  float: right;
+}
+
+
+/*テキスト"(必須)"のスタイルを指定する。 */
+#required-text {
+  font-size: 75%;
+}
+
+
+/*入力制限コメントのスタイルを指定する*/
+#comment-text{
+  font-size: 75%;
+  color: #ff0000;
+}
+
+/*ナビゲーション(現在ページ以外)のスタイルを指定する。*/
+#navi-text {
+  font-size: 75%;
+}
+
+/*ナビゲーション(現在ページ)のスタイルを指定する。*/
+#navi-present-text {
+  font-weight: bold;
+}
+
+/*ナビゲーションの配置を指定する。*/
+#navi-text-panel {
+  text-align: right;
+}
+

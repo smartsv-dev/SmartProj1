@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE ibatorConfiguration PUBLIC "-//Apache Software Foundation//DTD Apache iBATIS Ibator Configuration 1.0//EN" "http://ibatis.apache.org/dtd/ibator-config_1_0.dtd" >
+<ibatorConfiguration >
+
+    <classPathEntry location="C:\LocalDriveE\GitHub\SmartProj1\webapps\WEB-INF\lib\postgresql-9.4-1201-jdbc41.jar" />
+
+    <ibatorContext id="context1" targetRuntime="Ibatis2Java5" defaultModelType="flat" >
+
+    <ibatorPlugin type="org.apache.ibatis.ibator.plugins.SerializablePlugin" />
+    <ibatorPlugin type="org.apache.ibatis.ibator.plugins.EqualsHashCodePlugin" />
+    <ibatorPlugin type="org.apache.ibatis.ibator.plugins.SqlMapFileNamePlugin" />
+
+    <jdbcConnection driverClass="org.postgresql.Driver"
+                    connectionURL="jdbc:postgresql://localhost/oaservice"
+                    userId="postgres" password="postgres" />
+
+    <javaModelGenerator targetPackage="jp.co.smartservice.app.common.entity" targetProject="SmartProj1/src" />
+
+    <sqlMapGenerator targetPackage="sqlMap.entity" targetProject="SmartProj1/Resources" />
+
+    <daoGenerator targetPackage="jp.co.smartservice.app.common.dao" targetProject="SmartProj1/src" type="SPRING" />
+
+    <table schema="" tableName="t001_user"></table>
+  </ibatorContext>
+</ibatorConfiguration>

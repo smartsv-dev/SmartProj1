@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE form-validation PUBLIC
+          "-//Apache Software Foundation//DTD Commons Validator Rules Configuration 1.1.3//EN"
+          "http://jakarta.apache.org/commons/dtds/validator_1_1_3.dtd">
+<!-- 入力値検証定義 -->
+<form-validation>
+
+    <formset>
+  	<!-- ログインの入力チェック -->
+	    <form name="/BA01S0101BL">
+	    
+           <field property="username"
+                   depends="required, hankakuString">
+               <arg key="ユーザID" resource="false" position="0"/>
+           </field>
+
+	       <field property="password"
+                   depends="required, intRange">
+	           <arg key="パスワード" resource="false" position="0"/>
+   	           <arg key="${var:min}" resource="false" position="1"/>
+   	           <arg key="${var:max}" resource="false" position="2"/>
+	           <var>
+                   <var-name>min</var-name>
+                   <var-value>1</var-value>
+               </var>
+               <var>
+                   <var-name>max</var-name>
+                   <var-value>47</var-value>
+               </var>
+	       </field>
+
+           <field property="depDayYearCondition"
+                   depends="required, intRange">
+               <arg key="出発日(年)" resource="false" position="0"/>
+               <arg key="${var:min}" resource="false" position="1"/>
+               <arg key="${var:max}" resource="false" position="2"/>
+               <var>
+                   <var-name>min</var-name>
+                   <var-value>2000</var-value>
+               </var>
+               <var>
+                   <var-name>max</var-name>
+                   <var-value>3000</var-value>
+               </var>
+           </field>	
+
+           <field property="depDayMonthCondition"
+                   depends="required, intRange">
+               <arg key="出発日(月)" resource="false" position="0"/>
+               <arg key="${var:min}" resource="false" position="1"/>
+               <arg key="${var:max}" resource="false" position="2"/>
+               <var>
+                   <var-name>min</var-name>
+                   <var-value>1</var-value>
+               </var>
+               <var>
+                   <var-name>max</var-name>
+                   <var-value>12</var-value>
+               </var>
+           </field>	
+
+           <field property="depDayDayCondition"
+                   depends="required, intRange">
+               <arg key="出発日(日)" resource="false" position="0"/>
+               <arg key="${var:min}" resource="false" position="1"/>
+               <arg key="${var:max}" resource="false" position="2"/>
+               <var>
+                   <var-name>min</var-name>
+                   <var-value>1</var-value>
+               </var>
+               <var>
+                   <var-name>max</var-name>
+                   <var-value>31</var-value>
+               </var>
+           </field>	
+
+           <field property="tourDaysCondition"
+                   depends="required, intRange">
+               <arg key="日数" resource="false" position="0" />
+               <arg key="${var:min}" resource="false" position="1"/>
+               <arg key="${var:max}" resource="false" position="2"/>
+               <var>
+                   <var-name>min</var-name>
+                   <var-value>1</var-value>
+               </var>
+               <var>
+                   <var-name>max</var-name>
+                   <var-value>7</var-value>
+               </var>
+           </field>		
+
+           <field property="adultCountCondition"
+                   depends="required, intRange">
+               <arg key="人数(大人)" resource="false" position="0" />
+               <arg key="${var:min}" resource="false" position="1" />
+               <arg key="${var:max}" resource="false" position="2" />
+               <var>
+                   <var-name>min</var-name>
+                   <var-value>1</var-value>
+               </var>
+               <var>
+                   <var-name>max</var-name>
+                   <var-value>5</var-value>
+               </var>
+           </field>		
+
+           <field property="childCountCondition"
+                   depends="required, intRange">
+               <arg key="人数(子ども)" resource="false" position="0"/>
+               <arg key="${var:min}" resource="false" position="1"/>
+               <arg key="${var:max}" resource="false" position="2"/>
+               <var>
+                   <var-name>min</var-name>
+                   <var-value>0</var-value>
+               </var>
+               <var>
+                   <var-name>max</var-name>
+                   <var-value>5</var-value>
+               </var>
+           </field>		
+
+           <field property="basePriceCondition"
+                   depends="required, intRange">
+               <arg key="基本料金" resource="false" position="0"/>
+               <arg key="${var:min}" resource="false" position="1"/>
+               <arg key="${var:max}" resource="false" position="2"/>
+               <var>
+                   <var-name>min</var-name>
+                   <var-value>1</var-value>
+               </var>
+               <var>
+                   <var-name>max</var-name>
+                   <var-value>6</var-value>
+               </var>
+           </field>	
+
+           <!-- 相関チェック 年月日検証-->
+           <field property="depDayYearCondition"
+                   depends="multiField">
+               <msg key="error.common.00004" name="multiField"/>
+               <arg key="出発日" position="0" resource="false"/>
+               <var>
+                   <var-name>fields</var-name>
+                   <var-value>depDayMonthCondition, depDayDayCondition</var-value>
+               </var>
+               <var>
+                   <var-name>multiFieldValidator</var-name>
+                   <var-value>jp.terasoluna.toursample.common.validator.DateValidator</var-value>
+               </var>
+             </field>	
+
+           <!-- 相関チェック 予約可能日付検証-->
+           <field property="depDayYearCondition"
+                   depends="multiField">
+               <msg key="error.common.00005" name="multiField"/>
+               <var>
+                   <var-name>fields</var-name>
+                   <var-value>depDayMonthCondition, depDayDayCondition</var-value>
+               </var>
+               <var>
+                   <var-name>multiFieldValidator</var-name>
+                   <var-value>jp.terasoluna.toursample.common.validator.ReservedPeriodValidator</var-value>
+               </var>
+             </field>		
+
+  	    </form>
+  	    
+  	    <form name="/SC_A01_01_03SCR">
+	      <field property="remarks"
+	             depends="maxlength">
+	        <arg key="ご意見ご要望" resource="false" position="0" />
+	        <arg key="${var:maxlength}" resource="false" position="1" />
+	        <var>
+	        	<var-name>maxlength</var-name>
+	        	<var-value>80</var-value>
+	        </var>
+	      </field>
+  	    </form>
+	    
+	<!-- ツアー予約登録確定の入力チェック -->
+	    <form name="/RP_A01_01_03_01BL">
+           <field property="priceOutput.adultCount"
+                   depends="required, intRange">
+               <arg key="人数(大人)" resource="false" position="0" />
+               <arg key="${var:min}" resource="false" position="1" />
+               <arg key="${var:max}" resource="false" position="2" />
+               <var>
+                   <var-name>min</var-name>
+                   <var-value>1</var-value>
+               </var>
+               <var>
+                   <var-name>max</var-name>
+                   <var-value>5</var-value>
+               </var>
+           </field>		
+
+           <field property="priceOutput.childCount"
+                   depends="required, intRange">
+               <arg key="人数(子ども)" resource="false" position="0"/>
+               <arg key="${var:min}" resource="false" position="1"/>
+               <arg key="${var:max}" resource="false" position="2"/>
+               <var>
+                   <var-name>min</var-name>
+                   <var-value>0</var-value>
+               </var>
+               <var>
+                   <var-name>max</var-name>
+                   <var-value>5</var-value>
+               </var>
+           </field>
+           
+           <field property="remarks"
+	             depends="maxlength">
+	        <arg key="ご意見ご要望" resource="false" position="0" />
+	        <arg key="${var:maxlength}" resource="false" position="1" />
+	        <var>
+	        	<var-name>maxlength</var-name>
+	        	<var-value>80</var-value>
+	        </var>
+	      </field>
+           	
+        </form>
+    </formset>
+
+</form-validation>

@@ -1,0 +1,3 @@
+DELETE FROM t001_user;
+
+COMMIT;

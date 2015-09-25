@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN"
+                               "http://struts.apache.org/dtds/struts-config_1_2.dtd">
+<struts-config>
+    <data-sources/>
+ 
+<!-- ======================================== フォームビーン定義 -->              
+    <form-beans>
+        <form-bean name="_BA01S02From"
+            type="jp.co.smartservice.app.ba01s02.form.BA01S02From"/>
+    </form-beans>    
+
+<!-- ======================================== アクションマッピング定義 -->
+
+    <action-mappings type="jp.terasoluna.fw.web.struts.action.ActionMappingEx">
+   
+    <!--=====================================================================-->
+    <!-- 画面遷移 -->
+    <!--=====================================================================-->
+
+        <!-- メニュー画面へ遷移するフォワードアクション -->
+        <action path="/BA01S0201SCR" 
+            name="_BA01S02From"
+            forward="/pages/BA01S02.jsp">
+            <set-property property="cancelPopulate" value="true" />
+        </action>
+
+    </action-mappings>
+
+</struts-config>

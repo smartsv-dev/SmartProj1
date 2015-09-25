@@ -1,0 +1,188 @@
+/* <form>のスタイルを定義する。 */
+form {
+  margin: 0px;
+  padding: 0px;
+}
+
+
+/* <h1>のスタイルを定義する。 */
+h1 {
+  font-size: medium;
+  font-weight: normal;
+  margin: 0px;
+}
+
+
+/* 画面全体の配置を指定する。 */
+.com-root-panel {
+  width: 972px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+
+/* ヘッダの情報部の配置を指定する。 */
+.com-header-info-panel {
+  width: 960px;
+  padding: 6px
+}
+
+
+/* ヘッダの情報部の顧客情報 */
+.com-header-user-panel {
+  float: left;
+  text-align: left;
+}
+
+
+/* ヘッダのボタン部の配置を指定する。 */
+.com-header-button-panel {
+  text-align: right;
+}
+
+
+/* ヘッダのボタン部のボタン */
+.com-header-button {
+  height: 30px;
+  width: 100px;
+}
+
+
+/* ヘッダのボタン部の<P>のスタイルを定義する。 */
+.com-header-button-form p {
+  margin: 0px;
+}
+
+
+/* フッタのスタイルを指定する。 */
+.com-footer-panel {
+  width: 966px;
+  height: 20px;
+  background-color:#7799DD;
+  border: 2px ridge;
+  margin-top: 2px;
+}
+
+
+/* フッタのロゴ部のスタイルを指定する。 */
+.com-footer-logo-text {
+  color: #FFFFFF;
+  font-weight: bold;
+}
+
+
+/* 一般ボタンのスタイルを指定する。 */
+.com-normal-button {
+  height: 30px;
+  width: 100px;
+}
+
+
+/* 長いボタンのスタイルを指定する。 */
+.com-long-button {
+  width: 150px;
+  height: 30px;
+}
+
+
+/* もっと長いボタンのスタイルを指定する。 */
+.com-longest-button {
+  width: 180px;
+  height: 30px;
+}
+
+
+/* テーブルのスタイルを指定する。 */
+.com-visible-table {
+  border-collapse: collapse;
+  border-spacing: 0px;
+  border: 3px ridge;
+}
+
+
+/* テーブル中の<caption>のスタイルを指定する。 */
+.com-visible-table caption {
+  text-align: left;
+  font-weight: bold;
+}
+
+
+/* テーブル中の<th>のスタイルを指定する。 */
+.com-visible-table th {
+  color: #000000;
+  padding: 2px 2px 2px 2px;
+  background-color: #EEDDFF;
+  border: 1px solid #000000;
+}
+
+
+/* テーブル中の<td>のスタイルを指定する。 */
+.com-visible-table td {
+  padding: 2px 2px 2px 3px;
+  background-color: #FFFFFF;
+  border: 1px solid #000000;
+}
+
+
+/* float設定をクリアする。 */
+.com-float-clear {
+  clear: both;
+}
+
+
+/* メッセージ部のスタイルを指定する。 */
+.com-message-panel {
+  font-weight: bold;
+  text-align: center;
+}
+
+
+/* メッセージ部(赤色)のスタイルを指定する。 */
+.com-normal-message-panel {
+  color: #FF0000;
+  font-weight: bold;
+  text-align: center;
+}
+
+
+/* メッセージ部の<p>のスタイルを指定する。 */
+.com-message-panel p {
+  margin: 5px;
+}
+
+
+/* エラーメッセージ部のスタイルを指定する。 */
+.com-error-message-panel {
+  color: #FF0000;
+  font-weight: bold;
+  text-align: center;
+}
+
+
+/* エラーメッセージ部の<p>のスタイルを指定する。 */
+.com-error-message-panel p {
+  margin: 5px;
+}
+
+
+/* ボタンの配置のためのテーブルのスタイルを指定する。 */
+.com-button-table {
+  border-collapse: collapse;
+  border-spacing: 0px;
+  border: 0px ridge;
+}
+
+
+/* ボタンテーブル中の<th>のスタイルを指定する。 */
+.com-button-table th {
+  padding: 2px 2px 2px 2px;
+  border: 0px;
+}
+
+
+/* ボタンテーブル中の<td>のスタイルを指定する。 */
+.com-button-table td {
+  padding: 2px 2px 2px 3px;
+  border: 0px;
+}

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!-- モジュール固有のBean定義 -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+    <!-- 共通定義のインポート -->
+    <import resource="../../commonContext.xml"/>
+
+    <!-- ログイン画面へのフォワードアクション -->
+    <bean name="/BA01S0101SCR"
+          class="jp.terasoluna.fw.web.struts.actions.ForwardAction"
+          scope="singleton">
+    </bean>
+
+    <!-- ログイン画面(BA01S01)からの処理分岐 -->
+    <bean name="/BA01S0101DSP"
+          class="jp.terasoluna.fw.web.struts.actions.DispatchAction"
+          scope="singleton" >
+    </bean>
+
+    <!-- ログインリクエスト -->
+    <bean name="/BA01S0101BL"
+          class="jp.terasoluna.fw.web.struts.actions.BLogicAction"
+          scope="singleton" >
+        <property name="businessLogic" ref="BA01S0101BLogic"/>
+        <property name="tokenCheck" value="false"/>
+    </bean>
+
+    <bean id="BA01S0101BLogic"
+          class="jp.co.smartservice.app.ba01s01.blogic.BA01S0101BLogicImpl"
+          scope="singleton">
+        <property name="queryDAO" ref="queryDAO"/>
+        <property name="passwordEncoder" ref="passwordEncoder"/>
+        <property name="messeageResources" ref="messeageResources"/>
+    </bean>
+
+    <!-- ログアウトリクエスト -->
+    <bean name="/BA01S0102Action" scope="singleton"
+        class="jp.co.smartservice.app.ba01s01.action.BA01S0102Action" />
+</beans>

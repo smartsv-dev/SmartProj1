@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+
+<!-- アプリケーション全体のBean定義 -->
+
+<!-- ======================================== OSSパッチ定義 -->
+  <!-- commons-JXPathのバグ(JXPATH-152)用パッチをアクティベート -->
+  <bean id="jxpathPatchActivator" class="jp.terasoluna.fw.beans.jxpath.JXPATH152PatchActivator"/>
+
+<!-- ======================================== パスワードエンコード定義 -->
+  <bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder" />
+
+<!-- ======================================== 各種フィルタコントローラ定義 -->
+  <!-- ログオン済みチェック設定 -->
+  <bean id="smartAuthenticationController"
+        class="jp.co.smartservice.fw.filter.SmartAuthenticationController">
+    <property name="authenticatedNoCheckPaths">
+      <list>
+        <value>/</value>                                   <!-- rootパス -->
+        <value>^/.+\.css$</value>                          <!-- 全cssファイルのパス -->
+        <value>^/[^/]+</value>                             <!-- デフォルトモジュールの全パス -->
+        <value>^/UC_A99_03/.+</value>                      <!-- 顧客登録ユースケースの全パス -->
+        <value>.*/switchAction.do$</value>                 <!-- 全モジュールのswitchActionパス -->
+        <value>/UC_A01_01/RP_A01_01_01_02BL.do</value>     <!-- ツアー検索リクエストパス -->
+        <value>/UC_A01_01/RP_A01_01_01_04BL.do</value>     <!-- ツアー予約登録ページリンク遷移リクエストパス -->
+        <value>/UC_A01_01/RP_A01_01_01_03BL.do</value>     <!-- ツアー予約登録ツアー詳細取得リクエストパス -->
+        <value>/UC_A01_01/SC_A01_01_02DSP.do</value>       <!-- ツアー検索画面のパス -->
+      </list>
+    </property>
+  </bean>
+
+<!-- ======================================== データソース定義 -->
+  <!--
+     WTPを利用してTomcatを起動する場合、<ContextRoot>/META-INF/context.xmlに
+     データソースの接続情報を設定する。
+     またTomcatでJDBC接続を行う場合、各種JDBCドライバのjarにクラスパスを通すこと。
+  -->
+  <bean id="smartDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <property name="jndiName" value="java:comp/env/jdbc/SmartDataSource"/>
+    <!--
+    <property name="defaultTransactionIsolation" value="8"/>
+    -->
+  </bean>
+
+<!-- ======================================== トランザクション・AOP定義 -->
+  <!-- トランザクションマネージャの定義 -->
+  <bean id="transactionManager"
+    class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource" ref="smartDataSource"/>
+  </bean>
+
+  <!-- トランザクションインタセプタの定義 -->
+  <!--
+    トランザクションを設定するメソッドと実行モードを定義する。
+    transaction-manager="transactionManager" の設定は省略可能。
+  -->
+  <tx:advice id="transactionInterceptor">
+    <tx:attributes>
+      <tx:method name="execute*" propagation="REQUIRED" rollback-for="java.lang.Exception"/>
+    </tx:attributes>
+  </tx:advice>
+
+  <!-- AOPの定義 -->
+  <!--
+    下記で指定したパターンのBeanに対してインタセプタを適用する。
+    applicationContext.xmlで定義されたBeanのみ対象となるので注意すること。
+   -->
+   <!--
+  <aop:config>
+    <aop:pointcut id="daoBeans" expression="bean(*DAO)"/>
+    <aop:advisor pointcut-ref="daoBeans"
+                 advice-ref="transactionInterceptor"/>
+  </aop:config>
+  -->
+
+<!-- ======================================== リソースバンドル定義 -->
+  <!-- プロパティファイル利用 -->
+  <!--
+    basenamesプロパティでメッセージプロパティファイルを設定する。
+   -->
+  <bean id="messageSource"
+        class="org.springframework.context.support.ResourceBundleMessageSource">
+    <property name="basenames" value="application-messages, system-messages"/>
+  </bean>
+
+  <bean id="messeageResources"
+        class="jp.co.smartservice.fw.message.MesseageResources">
+        <property name="messageSource" ref="messageSource"/>
+  </bean>
+
+<!-- ======================================== iBATIS定義 -->
+  <!-- SqlMap定義 -->
+  <bean id="sqlMapClient"
+        class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+    <property name="configLocation" value="WEB-INF/sqlMapConfig.xml"/>
+    <property name="dataSource" ref="smartDataSource"/>
+  </bean>
+
+  <!-- 照会系のDAO定義 -->
+  <bean id="queryDAO"
+        class="jp.terasoluna.fw.dao.ibatis.QueryDAOiBatisImpl">
+    <property name="sqlMapClient"><ref local="sqlMapClient"/></property>
+  </bean>
+
+  <!-- 更新系のDAO定義 -->
+  <bean id="updateDAO"
+        class="jp.terasoluna.fw.dao.ibatis.UpdateDAOiBatisImpl">
+    <property name="sqlMapClient"><ref local="sqlMapClient"/></property>
+  </bean>
+
+  <!-- ストアドプロシジャ用のDAO定義 -->
+  <bean id="storedProcedureDAO"
+        class="jp.terasoluna.fw.dao.ibatis.StoredProcedureDAOiBatisImpl">
+    <property name="sqlMapClient"><ref local="sqlMapClient"/></property>
+  </bean>
+
+  <!-- ローハンドラ用のDAO定義 -->
+  <bean id="queryRowHandleDAO"
+        class="jp.terasoluna.fw.dao.ibatis.QueryRowHandleDAOiBatisImpl">
+    <property name="sqlMapClient" ref="sqlMapClient" />
+  </bean>
+
+  <!-- DBメッセージリソース用DAO定義 -->
+  <!--
+    applicationContext.xmlでDBメッセージリソースの定義がされている場合は、
+    下記のコメントアウトを解除してDBメッセージリソース用DAOの設定を有効にすること。
+   -->
+  <!--
+  <bean id="DBMessageResourceDAO"
+        class="jp.terasoluna.fw.message.DBMessageResourceDAOImpl">
+    <property name="dataSource" ref="TerasolunaSampleDataSource"/>
+    <property name="tableName"      value="MESSAGES"/>
+    <property name="codeColumn"     value="CODE"/>
+    <property name="messageColumn"  value="MESSAGE"/>
+    <property name="languageColumn" value="LANGUAGES"/>
+    <property name="countryColumn"  value="COUNTRY"/>
+    <property name="variantColumn"  value="VARIANT"/>
+  </bean>
+  -->
+
+<!-- ======================================== コードリスト定義 -->
+  <!-- プロパティコードリスト設定 -->
+  <!-- CODE_001: 都道府県コード(使用しないので定義を削除した。) -->
+
+  <!-- CODE_002: 月コード -->
+  <bean id="CODE_002"
+    class="jp.terasoluna.fw.web.codelist.MappedCodeListLoader"
+    init-method="load">
+    <property name="codeListMap">
+      <map>
+        <entry key="01" value="01"/>
+        <entry key="02" value="02"/>
+        <entry key="03" value="03"/>
+        <entry key="04" value="04"/>
+        <entry key="05" value="05"/>
+        <entry key="06" value="06"/>
+        <entry key="07" value="07"/>
+        <entry key="08" value="08"/>
+        <entry key="09" value="09"/>
+        <entry key="10" value="10"/>
+        <entry key="11" value="11"/>
+        <entry key="12" value="12"/>
+      </map>
+    </property>
+  </bean>
+
+  <!-- CODE_003: 日コード -->
+  <bean id="CODE_003"
+    class="jp.terasoluna.fw.web.codelist.MappedCodeListLoader"
+    init-method="load">
+    <property name="codeListMap">
+      <map>
+        <entry key="01" value="01"/>
+        <entry key="02" value="02"/>
+        <entry key="03" value="03"/>
+        <entry key="04" value="04"/>
+        <entry key="05" value="05"/>
+        <entry key="06" value="06"/>
+        <entry key="07" value="07"/>
+        <entry key="08" value="08"/>
+        <entry key="09" value="09"/>
+        <entry key="10" value="10"/>
+        <entry key="11" value="11"/>
+        <entry key="12" value="12"/>
+        <entry key="13" value="13"/>
+        <entry key="14" value="14"/>
+        <entry key="15" value="15"/>
+        <entry key="16" value="16"/>
+        <entry key="17" value="17"/>
+        <entry key="18" value="18"/>
+        <entry key="19" value="19"/>
+        <entry key="20" value="20"/>
+        <entry key="21" value="21"/>
+        <entry key="22" value="22"/>
+        <entry key="23" value="23"/>
+        <entry key="24" value="24"/>
+        <entry key="25" value="25"/>
+        <entry key="26" value="26"/>
+        <entry key="27" value="27"/>
+        <entry key="28" value="28"/>
+        <entry key="29" value="29"/>
+        <entry key="30" value="30"/>
+        <entry key="31" value="31"/>
+      </map>
+    </property>
+  </bean>
+
+  <!-- CODE_004: 日数コード -->
+  <bean id="CODE_004"
+    class="jp.terasoluna.fw.web.codelist.MappedCodeListLoader"
+    init-method="load">
+    <property name="codeListMap">
+      <map>
+        <entry key="01" value="制限なし"/>
+        <entry key="02" value="日帰り"/>
+        <entry key="03" value="1泊以下"/>
+        <entry key="04" value="2泊以下"/>
+        <entry key="05" value="3泊以下"/>
+        <entry key="06" value="4泊以下"/>
+        <entry key="07" value="5泊以下"/>
+      </map>
+    </property>
+  </bean>
+
+  <!-- CODE_004_VALUES: 日数コードのデータベース登録値 -->
+  <bean id="CODE_004_VALUES"
+    class="org.springframework.beans.factory.config.MapFactoryBean">
+    <property name="sourceMap">
+      <map>
+        <entry key="01" value="0"/>
+        <entry key="02" value="1"/>
+        <entry key="03" value="2"/>
+        <entry key="04" value="3"/>
+        <entry key="05" value="4"/>
+        <entry key="06" value="5"/>
+        <entry key="07" value="6"/>
+      </map>
+    </property>
+  </bean>
+
+  <!-- CODE_005: 基本料金コード -->
+  <bean id="CODE_005"
+    class="jp.terasoluna.fw.web.codelist.MappedCodeListLoader"
+    init-method="load">
+    <property name="codeListMap">
+      <map>
+        <entry key="01" value="上限なし"/>
+        <entry key="02" value="10,000円以下"/>
+        <entry key="03" value="20,000円以下"/>
+        <entry key="04" value="30,000円以下"/>
+        <entry key="05" value="40,000円以下"/>
+        <entry key="06" value="50,000円以下"/>
+      </map>
+    </property>
+  </bean>
+
+  <!-- CODE_005_VALUES: 基本料金コードのデータベース登録値 -->
+  <bean id="CODE_005_VALUES"
+    class="org.springframework.beans.factory.config.MapFactoryBean">
+    <property name="sourceMap">
+      <map>
+        <entry key="01" value="0"/>
+        <entry key="02" value="10000"/>
+        <entry key="03" value="20000"/>
+        <entry key="04" value="30000"/>
+        <entry key="05" value="40000"/>
+        <entry key="06" value="50000"/>
+      </map>
+    </property>
+  </bean>
+
+  <!-- CODE_006: 人数(大人)コード -->
+  <bean id="CODE_006"
+    class="jp.terasoluna.fw.web.codelist.MappedCodeListLoader"
+    init-method="load">
+    <property name="codeListMap">
+      <map>
+        <entry key="1" value="1"/>
+        <entry key="2" value="2"/>
+        <entry key="3" value="3"/>
+        <entry key="4" value="4"/>
+        <entry key="5" value="5"/>
+      </map>
+    </property>
+  </bean>
+
+  <!-- CODE_007: 人数(子ども)コード -->
+  <bean id="CODE_007"
+    class="jp.terasoluna.fw.web.codelist.MappedCodeListLoader"
+    init-method="load">
+    <property name="codeListMap">
+      <map>
+        <entry key="0" value="0"/>
+        <entry key="1" value="1"/>
+        <entry key="2" value="2"/>
+        <entry key="3" value="3"/>
+        <entry key="4" value="4"/>
+        <entry key="5" value="5"/>
+      </map>
+    </property>
+  </bean>
+
+  <!-- CODE_008: 誕生日年コード -->
+  <bean id="CODE_008"
+    class="jp.terasoluna.fw.web.codelist.MappedCodeListLoader"
+    init-method="load">
+    <property name="codeListMap">
+      <map>
+        <entry key="1930" value="1930"/>
+        <entry key="1931" value="1931"/>
+        <entry key="1932" value="1932"/>
+        <entry key="1933" value="1933"/>
+        <entry key="1934" value="1934"/>
+        <entry key="1935" value="1935"/>
+        <entry key="1936" value="1936"/>
+        <entry key="1937" value="1937"/>
+        <entry key="1938" value="1938"/>
+        <entry key="1939" value="1939"/>
+        <entry key="1940" value="1940"/>
+        <entry key="1941" value="1941"/>
+        <entry key="1942" value="1942"/>
+        <entry key="1943" value="1943"/>
+        <entry key="1944" value="1944"/>
+        <entry key="1945" value="1945"/>
+        <entry key="1946" value="1946"/>
+        <entry key="1947" value="1947"/>
+        <entry key="1948" value="1948"/>
+        <entry key="1949" value="1949"/>
+        <entry key="1950" value="1950"/>
+        <entry key="1951" value="1951"/>
+        <entry key="1952" value="1952"/>
+        <entry key="1953" value="1953"/>
+        <entry key="1954" value="1954"/>
+        <entry key="1955" value="1955"/>
+        <entry key="1956" value="1956"/>
+        <entry key="1957" value="1957"/>
+        <entry key="1958" value="1958"/>
+        <entry key="1959" value="1959"/>
+        <entry key="1960" value="1960"/>
+        <entry key="1961" value="1961"/>
+        <entry key="1962" value="1962"/>
+        <entry key="1963" value="1963"/>
+        <entry key="1964" value="1964"/>
+        <entry key="1965" value="1965"/>
+        <entry key="1966" value="1966"/>
+        <entry key="1967" value="1967"/>
+        <entry key="1968" value="1968"/>
+        <entry key="1969" value="1969"/>
+        <entry key="1970" value="1970"/>
+        <entry key="1971" value="1971"/>
+        <entry key="1972" value="1972"/>
+        <entry key="1973" value="1973"/>
+        <entry key="1974" value="1974"/>
+        <entry key="1975" value="1975"/>
+        <entry key="1976" value="1976"/>
+        <entry key="1977" value="1977"/>
+        <entry key="1978" value="1978"/>
+        <entry key="1979" value="1979"/>
+        <entry key="1980" value="1980"/>
+        <entry key="1981" value="1981"/>
+        <entry key="1982" value="1982"/>
+        <entry key="1983" value="1983"/>
+        <entry key="1984" value="1984"/>
+        <entry key="1985" value="1985"/>
+        <entry key="1986" value="1986"/>
+        <entry key="1987" value="1987"/>
+        <entry key="1988" value="1988"/>
+        <entry key="1989" value="1989"/>
+        <entry key="1990" value="1990"/>
+        <entry key="1991" value="1991"/>
+        <entry key="1992" value="1992"/>
+        <entry key="1993" value="1993"/>
+        <entry key="1994" value="1994"/>
+        <entry key="1995" value="1995"/>
+        <entry key="1996" value="1996"/>
+        <entry key="1997" value="1997"/>
+        <entry key="1998" value="1998"/>
+        <entry key="1999" value="1999"/>
+        <entry key="2000" value="2000"/>
+      </map>
+    </property>
+  </bean>
+
+  <!-- DBコードリスト設定 -->
+  <!-- CODE_009: 出発地コード
+  <bean id="CODE_009"
+        class="jp.terasoluna.fw.web.codelist.DBCodeListLoader"
+        init-method="load">
+    <property name="dataSource" ref="smartDataSource"/>
+    <property name="sql">
+      <value>
+      SELECT
+        DEP_CODE,
+        DEP_NAME
+      FROM
+        DEPARTURE
+      ORDER BY
+        DEP_CODE
+      </value>
+    </property>
+  </bean>-->
+
+  <!-- CODE_010: 目的地コード
+  <bean id="CODE_010"
+        class="jp.terasoluna.fw.web.codelist.DBCodeListLoader"
+        init-method="load">
+    <property name="dataSource" ref="smartDataSource"/>
+    <property name="sql">
+      <value>
+      SELECT
+        ARR_CODE,
+        ARR_NAME
+      FROM
+        ARRIVAL
+      ORDER BY
+        ARR_CODE
+      </value>
+    </property>
+  </bean>-->
+
+</beans>

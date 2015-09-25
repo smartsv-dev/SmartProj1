@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN"
+                               "http://struts.apache.org/dtds/struts-config_1_2.dtd">
+<struts-config>
+    <data-sources/>
+ 
+<!-- ======================================== フォームビーン定義 -->              
+    <form-beans>
+        <form-bean name="_BA01S01From"
+            type="jp.co.smartservice.app.ba01s01.form.BA01S01From"/>
+    </form-beans>    
+
+<!-- ======================================== アクションマッピング定義 -->
+
+    <action-mappings type="jp.terasoluna.fw.web.struts.action.ActionMappingEx">
+   
+    <!--=====================================================================-->
+    <!-- 画面遷移 -->
+    <!--=====================================================================-->
+
+        <!-- ログイン画面へ遷移するフォワードアクション -->
+        <action path="/BA01S0101SCR"
+            name="_BA01S01From"
+            forward="/pages/BA01S01.jsp">
+            <set-property property="cancelPopulate" value="true" />
+        </action>
+
+        <!-- ログイン画面(BA01S01)からの処理分岐 -->
+        <action path="/BA01S0101DSP"
+            name="_BA01S01From"
+            scope="session">
+            <set-property property="cancelPopulate" value="true" />
+            <forward name="login" path="/BA01S0101BL.do"/>
+            <forward name="passwd" path="/BA01S0101SCR.do"/>
+            <forward name="default" path="/BA01S0101SCR.do"/>
+        </action>
+
+        <!-- ログインを行う -->
+        <action path="/BA01S0101BL"
+            name="_BA01S01From"
+            scope="session"
+            validate="false"
+            input="/BA01S0101SCR.do">
+            <forward name="success" path="/BA01S0201SCR.do"/>
+        </action>
+
+        <!-- ログアウトリクエスト -->
+        <action path="/BA01S0102Action"
+            name="_BA01S01From"
+            scope="session"
+            parameter="/BA01S0101SCR.do">
+            <set-property property="cancelPopulate" value="true" />
+        </action>
+    </action-mappings>
+
+</struts-config>

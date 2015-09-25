@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap
+            PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- SqlMap定義 -->
+<sqlMap namespace="BA01S01">
+
+    <!-- ツアー情報検索(selectTourInfo) postgreSQL用 -->
+    <select id="selectTourInfo"
+            parameterClass="jp.terasoluna.toursample.uc_a01_01.dto.SelectTourInfoInput"
+            resultClass="jp.terasoluna.toursample.uc_a01_01.dto.TourInfo">
+        SELECT TI.TOUR_CODE  AS tourCode,
+               TI.TOUR_NAME  AS tourName,
+               TI.DEP_DAY    AS depDay,
+               TI.TOUR_DAYS  AS tourIntDays,
+               TI.BASE_PRICE AS basePrice,
+               AR.ARR_NAME   AS arrName,
+               DP.DEP_NAME   AS depName
+        FROM (((TOURINFO TI
+               LEFT JOIN DEPARTURE DP ON TI.DEP_CODE = DP.DEP_CODE)
+               LEFT JOIN ARRIVAL   AR ON TI.ARR_CODE = AR.ARR_CODE)
+               LEFT OUTER JOIN (
+                                 SELECT RE.TOUR_CODE AS RESULT_TOUR_CODE,
+                                        SUM(RE.ADULT_COUNT + RE.CHILD_COUNT) AS RESERVE_COUNT
+                                 FROM
+                                        RESERVE RE
+                                 GROUP BY
+                                        RE.TOUR_CODE
+                                ) AS JR ON TI.TOUR_CODE = RESULT_TOUR_CODE)
+        WHERE (
+                (EXISTS (SELECT
+                            1
+                        FROM
+                            RESERVE RE
+                        WHERE
+                            RE.TOUR_CODE = TI.TOUR_CODE AND
+                            <![CDATA[
+                              (RE.ADULT_COUNT + RE.CHILD_COUNT + to_number( #adultCountCondition#, '9' ) + to_number( #childCountCondition#, '9')) <= TI.AVA_REC_MAX
+                            ]]>
+                        )
+                )
+              OR
+                (NOT EXISTS (SELECT
+                                1
+                             FROM
+                                 RESERVE RE
+                             WHERE
+                                  RE.TOUR_CODE = TI.TOUR_CODE
+                            )
+                )
+              )
+          AND TI.DEP_DAY  = TO_DATE(#depDayCondition#,'YYYY/MM/DD')
+          AND TI.DEP_CODE = #depCodeCondition#
+          AND TI.ARR_CODE = #arrCodeCondition#
+          <!-- 動的条件のprepend属性は、条件の前につく接続関係を示す。 -->
+          <dynamic prepend="and">
+              <isNotEqual prepend="and" property="tourDays" compareValue="0">
+                 <![CDATA[
+                 TI.TOUR_DAYS <= #tourDays#
+                 ]]>
+              </isNotEqual>
+              <isNotEqual prepend="and" property="basePrice" compareValue="0">
+                <![CDATA[
+                 TI.BASE_PRICE <= #basePrice#
+                 ]]> 
+              </isNotEqual>
+          </dynamic>
+        ORDER BY
+               TI.TOUR_DAYS DESC,
+               TI.BASE_PRICE DESC
+    </select>
+
+    <!-- ツアー情報件数取得(selectTourInfoCount) postgreSQL用 -->
+    <select id="selectTourInfoCount"
+             parameterClass="jp.terasoluna.toursample.uc_a01_01.dto.SelectTourInfoInput"
+             resultClass="java.lang.Integer">
+        SELECT COUNT(TI.TOUR_CODE)
+        FROM (TOURINFO TI 
+               LEFT OUTER JOIN (
+                                 SELECT RE.TOUR_CODE AS RESULT_TOUR_CODE,
+                                        SUM(RE.ADULT_COUNT + RE.CHILD_COUNT) AS RESERVE_COUNT
+                                 FROM
+                                        RESERVE RE
+                                 GROUP BY 
+                                        RE.TOUR_CODE
+                                ) AS JR ON TI.TOUR_CODE = RESULT_TOUR_CODE)
+        WHERE (
+                (EXISTS (SELECT
+                            1
+                        FROM
+                            RESERVE RE
+                        WHERE
+                            RE.TOUR_CODE = TI.TOUR_CODE AND
+                            <![CDATA[
+                                (RE.ADULT_COUNT + RE.CHILD_COUNT + to_number( #adultCountCondition#, '9') + to_number( #childCountCondition# , '9')) <= TI.AVA_REC_MAX
+                            ]]>
+                        )
+                )
+              OR
+                (NOT EXISTS (SELECT
+                                1 
+                             FROM
+                                 RESERVE RE
+                             WHERE
+                                  RE.TOUR_CODE = TI.TOUR_CODE
+                            )
+                )
+              )
+          AND TI.DEP_DAY  = TO_DATE(#depDayCondition#,'YYYY/MM/DD')
+          AND TI.DEP_CODE = #depCodeCondition#
+          AND TI.ARR_CODE = #arrCodeCondition#
+          <!-- 動的条件のprepend属性は、条件の前につく接続関係を示す。 -->
+          <dynamic prepend="and">
+              <isNotEqual prepend="and" property="tourDays" compareValue="0">
+                 <![CDATA[
+                 TI.TOUR_DAYS <= #tourDays#
+                 ]]>
+              </isNotEqual>
+              <isNotEqual prepend="and" property="basePrice" compareValue="0">
+                <![CDATA[
+                 TI.BASE_PRICE <= #basePrice#
+                 ]]> 
+              </isNotEqual>
+          </dynamic>
+    </select>
+
+
+    <!-- ツアー情報検索(selectTourInfo) Oracle用（※修正前） -->
+    <select id="selectTourInfo_ORG"
+            parameterClass="jp.terasoluna.toursample.uc_a01_01.dto.SelectTourInfoInput"
+            resultClass="jp.terasoluna.toursample.uc_a01_01.dto.TourInfo">
+        SELECT TOURINFO.TOUR_CODE  AS tourCode,
+               TOURINFO.TOUR_NAME  AS tourName,
+               TOURINFO.DEP_DAY    AS depDay,
+               TOURINFO.TOUR_DAYS  AS tourIntDays,
+               TOURINFO.BASE_PRICE AS basePrice,
+               ARRIVAL.ARR_NAME    AS arrName,
+               DEPARTURE.DEP_NAME  AS depName
+        FROM (((
+               TOURINFO
+               LEFT JOIN DEPARTURE ON TOURINFO.DEP_CODE = DEPARTURE.DEP_CODE)
+               LEFT JOIN ARRIVAL ON TOURINFO.ARR_CODE = ARRIVAL.ARR_CODE)
+               RIGHT OUTER JOIN (
+                   SELECT RESULT_TOUR_CODE,
+                          SUM(RESERVE.ADULT_COUNT + CHILD_COUNT) AS RESERVE_COUNT
+                   FROM (
+                          RESERVE
+                          RIGHT OUTER JOIN (
+                              SELECT TOURINFO.TOUR_CODE AS RESULT_TOUR_CODE
+                              FROM
+                                     TOURINFO
+                              WHERE
+                                     TOURINFO.DEP_CODE = #depCodeCondition# AND
+                                     TOURINFO.ARR_CODE = #arrCodeCondition# AND
+                                     TOURINFO.DEP_DAY  = TO_DATE(#depDayCondition#)
+                                     <!-- 動的条件のprepend属性は、条件の前につく接続関係を示す。 -->
+                                     <dynamic prepend="and">
+                                         <isNotEqual prepend="and" property="tourDays" compareValue="0">
+                                            <![CDATA[
+                                            TOURINFO.TOUR_DAYS <= #tourDays#
+                                            ]]>
+                                         </isNotEqual>
+                                         <isNotEqual prepend="and" property="basePrice" compareValue="0">
+                                           <![CDATA[
+                                            TOURINFO.BASE_PRICE <= #basePrice#
+                                            ]]> 
+                                         </isNotEqual>
+                                     </dynamic>)
+                          ON RESERVE.TOUR_CODE = RESULT_TOUR_CODE)
+                   GROUP BY RESULT_TOUR_CODE)
+               ON TOURINFO.TOUR_CODE = RESULT_TOUR_CODE)
+        WHERE
+               TOURINFO.AVA_REC_MAX >= (RESERVE_COUNT + #adultCountCondition# + #childCountCondition#) OR
+               (RESERVE_COUNT IS NULL AND TOURINFO.AVA_REC_MAX >= (#adultCountCondition# + #childCountCondition#))
+        ORDER BY
+               TOURINFO.TOUR_DAYS DESC,
+               TOURINFO.BASE_PRICE DESC
+    </select> 
+
+
+    <!-- ツアー情報件数取得(selectTourInfoCount) Oracle用（※修正前） -->
+    <select id="selectTourInfoCount_ORG"
+             parameterClass="jp.terasoluna.toursample.uc_a01_01.dto.SelectTourInfoInput"
+             resultClass="java.lang.Integer">
+        SELECT COUNT(TOURINFO.TOUR_CODE)
+        FROM (
+               TOURINFO
+               RIGHT OUTER JOIN (
+                   SELECT RESULT_TOUR_CODE,
+                          SUM(RESERVE.ADULT_COUNT + CHILD_COUNT) AS RESERVE_COUNT
+                   FROM (
+                          RESERVE
+                          RIGHT OUTER JOIN (
+                              SELECT TOURINFO.TOUR_CODE AS RESULT_TOUR_CODE
+                              FROM
+                                     TOURINFO
+                              WHERE
+                                     TOURINFO.DEP_CODE = #depCodeCondition# AND
+                                     TOURINFO.ARR_CODE = #arrCodeCondition# AND
+                                     TOURINFO.DEP_DAY  = TO_DATE(#depDayCondition#)
+                                     <!-- 動的条件のprepend属性は、条件の前につく接続関係を示す。 -->
+                                     <dynamic prepend="and">
+                                         <isNotEqual prepend="and" property="tourDays" compareValue="0">
+                                            <![CDATA[
+                                            TOURINFO.TOUR_DAYS <= #tourDays#
+                                            ]]>
+                                         </isNotEqual>
+                                         <isNotEqual prepend="and" property="basePrice" compareValue="0">
+                                           <![CDATA[
+                                            TOURINFO.BASE_PRICE <= #basePrice#
+                                            ]]> 
+                                         </isNotEqual>
+                                     </dynamic>)
+                          ON RESERVE.TOUR_CODE = RESULT_TOUR_CODE)
+                   GROUP BY RESULT_TOUR_CODE)
+               ON TOURINFO.TOUR_CODE = RESULT_TOUR_CODE)
+        WHERE
+               TOURINFO.AVA_REC_MAX >= (RESERVE_COUNT + #adultCountCondition# + #childCountCondition#) OR
+               (RESERVE_COUNT IS NULL AND TOURINFO.AVA_REC_MAX >= (#adultCountCondition# + #childCountCondition#))
+    </select>
+
+
+    <!-- ツアー最大催行人数取得 -->
+    <select id="selectAveRecMaxForUpdate"
+            parameterClass="jp.terasoluna.toursample.uc_a01_01.dto.RP_A01_01_03_01Input"
+            resultClass="java.lang.Integer">
+        SELECT
+            AVA_REC_MAX AS aveRecMax
+        FROM
+            TOURINFO
+        WHERE
+            TOUR_CODE = #tourCode#
+        FOR
+            UPDATE        
+    </select>
+    
+
+    <!-- 現在の予約人数合計を取得 -->
+    <select id="selectSumCount"
+            parameterClass="jp.terasoluna.toursample.uc_a01_01.dto.RP_A01_01_03_01Input"
+            resultClass="java.lang.Integer">
+        SELECT
+            SUM(ADULT_COUNT + CHILD_COUNT) AS sumCount
+        FROM
+            RESERVE
+        WHERE
+            TOUR_CODE = #tourCode#
+    </select>
+            
+
+    <!-- 予約番号取得(selectReserveNo) postgreSQL用 -->
+    <select id="selectReserveNo" resultClass="java.lang.String">
+        SELECT 
+            TO_CHAR(nextval('RESERVE_NO_SEQ'),'FM00000000') AS reserveNo
+    </select>
+
+
+    <!-- 予約データ追加 -->
+    <insert id="insertReserve" 
+              parameterClass="jp.terasoluna.toursample.uc_a01_01.dto.InsertReserveInput">
+          INSERT INTO RESERVE(
+              RESERVE_NO,
+              TOUR_CODE,
+              RESERVED_DAY,
+              ADULT_COUNT,
+              CHILD_COUNT,
+              CUSTOMER_CODE,
+              SUM_PRICE,
+              REMARKS) 
+          VALUES (
+              #reserveNo#,
+              #tourCode#,
+              #reservedDay#,
+              #adultCount#,
+              #childCount#,
+              #USER_VALUE_OBJECT.customerCode#,
+              #sumPrice#,
+              #remarks#)
+    </insert>
+
+</sqlMap>
